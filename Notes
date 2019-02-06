@@ -1,0 +1,20 @@
+INPUTS:
+	hit
+	stay
+	double down
+	split
+	how much to bet? Could have it always bet minimum first, then implement variable bets later
+
+
+
+
+GAME SIMULATION:
+	player
+	dealer
+	number of decks
+
+
+
+NN:
+	use nn first, then upgrade to a rnn like lstm??
+	Investigate NEAT, which could help a ton. That was the thing from mario.

@@ -1,0 +1,38 @@
+//SHOULD I MOVE THESE TO THEIR RESPECTIVE CLASSES?
+
+
+enum TYPE {
+	INPUT = 100,
+	HIDDEN,
+	OUTPUT
+};
+
+
+
+
+enum cards {
+	TWO = 2,
+	THREE = 3,
+	FOUR = 4,
+	FIVE = 5,
+	SIX = 6,
+	SEVEN = 7,
+	EIGHT = 8,
+	NINE = 9,
+	TEN = 10,
+	ACE = 11,
+	BLACKJACK = 21
+};
+
+
+enum game_constants {
+	NUM_TENS_PER_DECK = 16,
+	NUM_OTHER_CARDS_PER_DECK = 4,
+	NUM_CARDS_PER_STANDARD_DECK = 52,
+	LOWEST_CARD = TWO
+
+};
+
+
+
+
