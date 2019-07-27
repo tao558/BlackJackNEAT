@@ -1,7 +1,6 @@
-from Card import *
+from Card import Card, CardEnum
 from random import shuffle
-
-#TODO: See if there is a better way around importing. Might not be as bad as I thought if just keep implementing 
+from enum import Enum
 
 
 
@@ -19,7 +18,6 @@ class DeckParameters(Enum):
 
 class MasterDeck:
 	
-
 
     def __init__(self, num_std_decks_t):
         self.num_std_decks = num_std_decks_t

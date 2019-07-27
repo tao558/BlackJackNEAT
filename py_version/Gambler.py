@@ -1,7 +1,7 @@
-from Card import *
+from Card import Card, CardEnum
 
 
-#Might want to change the name of this class later because its confusing.
+#TODO: might want to change the name of this class later because its confusing.
 
 
 class Gambler:

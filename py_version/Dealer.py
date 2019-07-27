@@ -1,5 +1,6 @@
 
-from Gambler import *
+from Gambler import Gambler
+from Card import Card, CardEnum
 
 
 #Inheritance: https://www.geeksforgeeks.org/inheritance-in-python/

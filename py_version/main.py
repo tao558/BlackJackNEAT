@@ -1,6 +1,6 @@
-from Player import *
-from Dealer import *
-from MasterDeck import *
+#from Player import Player
+from Dealer import Dealer
+from MasterDeck import MasterDeck
 
 
 num_decks = 3
@@ -10,12 +10,10 @@ num_games_stop = 10
 
 m = MasterDeck(num_decks)
 dealer = Dealer(m)
-p1 = Player(m)
-p2 = Player(m)
-all_players = [p1, p2, dealer]
+all_players = [dealer]
 
 
-# TODO: Play some games! Maybe start off with just the dealer and make sure that the play() function works correctly. Then add in players 
+# TODO: Play some games! Start off with just the dealer and make sure that the play() function works correctly. Then work on NN
 
 
 
