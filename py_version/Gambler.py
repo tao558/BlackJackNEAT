@@ -18,8 +18,9 @@ class Gambler:
 
 
 
-	def draw_card(self):
+	def draw_card(self, visible):
 		next_card = self.master_deck.give_card()
+		next_card.is_visible = visible
 		self.hand.append(next_card)
 		
 		if (next_card.value == CardEnum.HIGH_ACE):
