@@ -4,5 +4,4 @@ py_version/ConnectionGene.py
 py_version/Enums.py
 py_version/Generation.py
 py_version/Genome.py
-py_version/NodeGene.py
 

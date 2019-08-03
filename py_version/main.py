@@ -7,6 +7,7 @@ import sys
 
 
 #TODO: list of visible cards?
+#TODO: Make sure consistently using or not using getters and setters 
 
 
 

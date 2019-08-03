@@ -5,7 +5,7 @@ import sys
 
 
 
-
+#TODO: make this not an enum
 class DeckParameters(Enum):
     NUM_TENS_PER_DECK = 16
     NUM_OTHER_CARDS_PER_DECK = 4
