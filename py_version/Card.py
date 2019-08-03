@@ -12,13 +12,16 @@ class Card:
     def is_faceup(self):
         return self.is_visible
 
+    def set_visibility(self, visibility):
+        self.is_visible = visibility
+
 
     def get_value(self):
         try:
             if (self.is_faceup()):
                 return self.value
 
-            raise RuntimeError("Tried to look at a card that isn't visible to any gamblers")
+            raise RuntimeError("ERROR: Tried to look at a card that isn't visible to any gamblers")
         except RuntimeError as e:
             print(e)
             sys.exit()

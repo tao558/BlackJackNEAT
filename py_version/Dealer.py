@@ -14,8 +14,9 @@ class Dealer( Gambler ):
 
 
 	def play(self):
-		#TODO: this is a temporary fix
-		self.hand[1].is_visible = True
+		# Make all cards visible
+		self.hand[0].set_visibility(True)
+		self.hand[1].set_visibility(True)
 
 		score = self.hand[0].get_value() + self.hand[1].get_value()
 

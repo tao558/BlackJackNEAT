@@ -1,0 +1,12 @@
+8/2/19
+# TODO: Does a deck get restocked with a brand new deck every time?
+# TODO: worried about players having their cards, then deck gets restocked, then there are more of the cards the playes have in their hand than any other card
+
+
+8/2/19
+#TODO: dealer BJ and bust counts are off very slightly. Even after running 10^7 games. I think its due to how I'm handling restocking the deck.
+#..... research the cut card and the "shoe"
+#TODO: Implement cut card, where when this is reached, turn is finished, then deck is reshuffled (with all of the other players cards? I think so)
+#..... What happens when I run out of cards? Maybe just dont let that happen
+
+
