@@ -1,30 +1,23 @@
 from Card import Card, CardEnum
 from random import shuffle
-from enum import Enum
 import sys
 
 
 
-#TODO: make this not an enum
-class DeckParameters(Enum):
+
+class MasterDeck:
+    # Define some game parameters
     NUM_TENS_PER_DECK = 16
     NUM_OTHER_CARDS_PER_DECK = 4
     NUM_CARDS_PER_STANDARD_DECK = 52
 
 
 
-
-
-
-
-class MasterDeck:
-	
-
     def __init__(self, num_std_decks_t):
         self.num_std_decks = num_std_decks_t
         self.deck = list()
         self.need_to_restock = False
-        self.TOTAL_NUM_CARDS = self.num_std_decks * DeckParameters.NUM_CARDS_PER_STANDARD_DECK.value 
+        self.TOTAL_NUM_CARDS = self.num_std_decks * self.NUM_CARDS_PER_STANDARD_DECK 
 
         self.stock()   
 
@@ -35,10 +28,10 @@ class MasterDeck:
         # The +1 at the end of the range() call is there so Aces are included, since range() is exclusive at the upper bound
         for card_value in range(CardEnum.TWO.value, CardEnum.HIGH_ACE.value + 1):
             if (card_value == CardEnum.TEN.value):
-                self.deck.extend( [Card(card_value, False) for i in range( DeckParameters.NUM_TENS_PER_DECK.value * self.num_std_decks )] )
+                self.deck.extend( [Card(card_value, False) for i in range( self.NUM_TENS_PER_DECK * self.num_std_decks )] )
 
             else: 
-                self.deck.extend( [Card(card_value, False) for i in range( DeckParameters.NUM_OTHER_CARDS_PER_DECK.value * self.num_std_decks)] )
+                self.deck.extend( [Card(card_value, False) for i in range( self.NUM_OTHER_CARDS_PER_DECK * self.num_std_decks)] )
 
         
         # Randomize the deck

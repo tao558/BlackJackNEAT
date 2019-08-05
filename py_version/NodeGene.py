@@ -1,12 +1,10 @@
 from enum import Enum
 
-#TODO: make these getters and setters more encapsulated?
-#TODO: inherit three different types from nodegene?
+#TODO: inherit three different types from nodegene? Would remove type variable and enum class
 class NodeGene:
-	def __init__(self, id_t, type_t, enabled_t):
+	def __init__(self, id_t, type_t):
 		self.id = id_t
 		self.type = type_t
-		self.enabled = enabled_t
 
 
 	def get_id(self):
@@ -18,7 +16,10 @@ class NodeGene:
 
 
 
-
+class NodeGeneTypesEnum(Enum):
+	INPUT = 1
+	HIDDEN = 2
+	OUTPUT = 3
 
 
 

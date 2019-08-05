@@ -1,5 +1,5 @@
 from Card import Card, CardEnum
-
+from MasterDeck import MasterDeck
 
 #TODO: might want to change the name of this class later because its confusing.
 
