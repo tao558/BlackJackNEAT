@@ -1,15 +1,57 @@
+from NodeGene import NodeGene, NodeGeneTypesEnum
+import numpy as np
+
+
 class Genome:
 
-	def __init__(self, nodes_t, connections_t):
-		self. nodes = nodes_t
+	# nodes is a list of node objects
+	# connections is a list of connections
+	def __init__(self, nodes_t, connections_t, node_id_counter):
+		self.nodes = nodes_t
 		self.connections = connections_t
+		self.node_id_counter = node_id_counter
+
+
+
+	#TODO
+	def mutate_add_connection(self):
+		pass
+
+
+	#TODO
+	def mutate_add_node(self, inno_number):
+
+		# Get a random index in range [0, len(connections))
+		# Loop ensures we get an enabled one
+		rand_index = None
+		while(True):
+			rand_index = np.random.randint(len(self.connections))
+			if (self.connections[rand_index].enabled):
+				break
+
+		connection = self.connections[rand_index]
+		connection.enabled = False
+		self.node_id_counter += 1
+		new_node = NodeGene(self.node_id_counter, NodeGeneTypesEnum.HIDDEN.value) 
+		#TODO:.... split connection, assign weights, etc...
+		#TODO: might have been something else relating to the init() fxn
 
 
 
 
 
 
+	def print_connections(self):
+		for connection in self.connections:
 
+			#TODO: make this more than one line
+			print("IN: {:d}, OUT: {:d}, WEIGHT: {:d}".format(connection.in_node.id, connection.out_node.id, connection.weight))
+
+
+
+	def print_nodes(self):
+		for node in self.nodes:
+			print("ID: {:d}, TYPE: {:d}".format(node.id, node.type))
 
 
 

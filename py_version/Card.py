@@ -12,9 +12,6 @@ class Card:
     def is_faceup(self):
         return self.is_visible
 
-    def set_visibility(self, visibility):
-        self.is_visible = visibility
-
 
     def get_value(self):
         try:

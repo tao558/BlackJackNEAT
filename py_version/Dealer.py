@@ -18,7 +18,7 @@ class Dealer( Gambler ):
 		self.hand[0].set_visibility(True)
 		self.hand[1].set_visibility(True)
 
-		score = self.hand[0].get_value() + self.hand[1].get_value()
+		score = self.hand[0].value + self.hand[1].value
 
 
  		# These are the conditions that the dealer hits on.
@@ -34,7 +34,7 @@ class Dealer( Gambler ):
 			# Otherwise, draw another card!
 			else:
 				next_card = Gambler.draw_card(self, True)   #TODO: CHECK THIS WHEN YOU HAVE INTERNET
-				score += next_card.get_value()
+				score += next_card.value
 				if (next_card == CardEnum.HIGH_ACE.value):
 					self.num_soft_aces+=1
 

@@ -32,27 +32,3 @@ class Gambler:
 
 
 
-
-
-
-
-
-# void setup_new_game(std::vector<Gambler> g) {
-	
-# 	//Distribute first card
-# 	for (int i=0; i<g.size(); i++) {
-# 		g[i].draw_card();
-		
-# 	}
-
-# 	//Distribute second card
-# 	for (int i=0; i<g.size(); i++) {
-# 		g[i].draw_card();
-		
-# 	}
-
-# }
-
-
-
-

@@ -8,7 +8,7 @@ import sys
 
 #TODO: list of visible cards?
 #TODO: Make sure consistently using or not using getters and setters 
-
+#TODO: Search thing for the document viewer I use is sorta broken. Ctrl F perturbed doesnt return all results
 
 
 # Makes all of the gamblers draw 
@@ -50,7 +50,7 @@ def reset_all_gamblers(gamblers):
 
 if __name__ == "__main__":
 
-
+    inno_number = 0
 
     num_decks = sys.argv[1]
     assert num_decks.isdigit(), "ERROR: num_decks must be a positive integer"
