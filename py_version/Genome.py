@@ -1,43 +1,85 @@
 from NodeGene import NodeGene, NodeGeneTypesEnum
 import numpy as np
+from ConnectionGene import ConnectionGene
 
 
 class Genome:
 
 	# nodes is a list of node objects
 	# connections is a list of connections
-	def __init__(self, nodes_t, connections_t, node_id_counter):
+	def __init__(self, nodes_t, connections_t):
 		self.nodes = nodes_t
 		self.connections = connections_t
-		self.node_id_counter = node_id_counter
+		self.next_node_id = 0
 
 
 
-	#TODO
-	def mutate_add_connection(self):
-		pass
+	# Returns true when a connection exists between node1 and node2
+	# false otherwise. Compares ids, not actual references
+	# TODO: test this, including the comparing actual references and the ids
+	def connection_exists(self, node1, node2):
+		id1 = node1.id
+		id2 = node2.id
+		for con in self.connections:
+			if (con.in_node.id == id1 and con.out_node.id == id2):
+				return True
+		return False
 
 
-	#TODO
-	def mutate_add_node(self, inno_number):
+
+	#TODO: TEST!
+	def mutate_add_connection(self, inno_num):
+
+		while(True):
+			node1 = self.nodes[np.random.randint(len(self.nodes))]
+			node2 = self.nodes[np.random.randint(len(self.nodes))]
+
+			# TODO: Check this
+			if (not self.connection_exists(node1, node2) and node1.type <= node2.type and node1.type != NodeGeneTypesEnum.OUTPUT.value and node2.type != NodeGeneTypesEnum.INPUT.value):
+				break
+		
+
+		# So now we know which two nodes will be connected. Increment inno_num,
+		# Then make the new connection
+		inno_num += 1
+		new_conn = ConnectionGene(node1, node2, np.random.uniform(), True, inno_num) #TODO: IMMEDIATE
+		self.connections.append(new_conn)
+		
+		return inno_num
+
+
+
+	# Assumes that there are a nonzero number of input and output nodes
+	#TODO CHECK AND TEST
+	def mutate_add_node(self, inno_num):
 
 		# Get a random index in range [0, len(connections))
 		# Loop ensures we get an enabled one
-		rand_index = None
 		while(True):
-			rand_index = np.random.randint(len(self.connections))
-			if (self.connections[rand_index].enabled):
+			connection_index = np.random.randint(len(self.connections))
+			if (self.connections[connection_index].enabled): 
 				break
 
-		connection = self.connections[rand_index]
-		connection.enabled = False
-		self.node_id_counter += 1
-		new_node = NodeGene(self.node_id_counter, NodeGeneTypesEnum.HIDDEN.value) 
-		#TODO:.... split connection, assign weights, etc...
-		#TODO: might have been something else relating to the init() fxn
+		old_connection = self.connections[connection_index]
+		old_connection.enabled = False
+		self.next_node_id += 1
+		new_node = NodeGene(self.next_node_id, NodeGeneTypesEnum.HIDDEN.value) 
+		old_in_node = old_connection.in_node
+		old_out_node = old_connection.out_node
+		old_weight = old_connection.weight
+		inno_num += 1
+
+		new_in_connection = ConnectionGene(old_in_node, new_node, 1, True, inno_num)
+		inno_num += 1
+		new_out_connection = ConnectionGene(new_node, old_out_node, old_weight, True, inno_num)
+
+		self.nodes.append(new_node)
+		self.connections.append(new_in_connection)
+		self.connections.append(new_out_connection)
 
 
 
+		return inno_num
 
 
 
