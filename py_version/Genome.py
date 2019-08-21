@@ -9,40 +9,73 @@ class Genome:
 	# connections is a list of connections
 	def __init__(self, nodes_t, connections_t):
 		self.nodes = nodes_t
-		self.connections = connections_t
-		self.next_node_id = 0
+		self.connections = connections_t # This includes active and enactive
+		self.next_node_id = len(self.nodes)
+		
+		# Now count the number of each type of node
+		n_input_nodes = n_hidden_nodes = n_output_nodes = 0
+		for node in self.nodes:
+			if (node.type == NodeGeneTypesEnum.INPUT.value):
+				n_input_nodes += 1
+			elif (node.type == NodeGeneTypesEnum.HIDDEN.value):
+				n_hidden_nodes += 1
+			else:
+				n_output_nodes += 1
 
+		self.n_input_nodes = n_input_nodes
+		self.n_hidden_nodes = n_hidden_nodes
+		self.n_output_nodes = n_output_nodes
+
+		
 
 
 	# Returns true when a connection exists between node1 and node2
 	# false otherwise. Compares ids, not actual references
-	# TODO: test this, including the comparing actual references and the ids
-	def connection_exists(self, node1, node2):
-		id1 = node1.id
-		id2 = node2.id
-		for con in self.connections:
-			if (con.in_node.id == id1 and con.out_node.id == id2):
-				return True
-		return False
+	def active_con_exists(self, node1, node2):
+		num_active_cons = [con for con in self.connections if con.in_node == node1 and con.out_node == node2 and con.enabled]
 
-
-
-	#TODO: TEST!
-	def mutate_add_connection(self, inno_num):
-
-		while(True):
-			node1 = self.nodes[np.random.randint(len(self.nodes))]
-			node2 = self.nodes[np.random.randint(len(self.nodes))]
-
-			# TODO: Check this
-			if (not self.connection_exists(node1, node2) and node1.type <= node2.type and node1.type != NodeGeneTypesEnum.OUTPUT.value and node2.type != NodeGeneTypesEnum.INPUT.value):
-				break
+		assert num_active_cons <= 1, ('ERROR: more than one active connection' 
+										'connecting nodes: {} and {}').format(node1.id, node2.id)
 		
 
-		# So now we know which two nodes will be connected. Increment inno_num,
-		# Then make the new connection
+		return num_active_cons == 1
+
+
+	# Returns true if a network is fully connected and false otherwise
+	def is_fully_connected(self):
+		n_in = self.n_input_nodes
+		n_hid = self.n_hidden_nodes
+		n_out = self.n_output_nodes
+		#Only consider active connections!
+		n_active_cons = len([con for con in self.connections if con.enabled]) 
+
+		return (n_in * (n_hid + n_out) + n_hid * (n_hid + n_out) == n_active_cons)
+
+
+
+	# Adds a connection to the genome. If already fully connected, does nothing
+	def mutate_add_connection(self, inno_num):
+		# First check if we can even add a connection
+		if (self.is_fully_connected()):
+			print("THIS RAN")
+			return inno_num
+
+
+		OUTPUT = NodeGeneTypesEnum.OUTPUT.value
+		INPUT = NodeGeneTypesEnum.INPUT.value
+		while (True):
+			node1 = self.nodes[np.random.randint(len(self.nodes))]
+			node2 = self.nodes[np.random.randint(len(self.nodes))]
+			con_exists = self.active_con_exists(node1, node2)
+
+			# TODO: Check this/abbreviate it. Added check that makes sure that the connection is enabled
+			if (not con_exists and node1.type <= node2.type and node1.type != OUTPUT and node2.type != INPUT):
+				break
+		
+		# So now we know which two nodes which are not already connected.
+		# Make the new connection, and take care of the innovation number
 		inno_num += 1
-		new_conn = ConnectionGene(node1, node2, np.random.uniform(), True, inno_num) #TODO: IMMEDIATE
+		new_conn = ConnectionGene(node1, node2, np.random.uniform(), True, inno_num)
 		self.connections.append(new_conn)
 		
 		return inno_num
@@ -50,7 +83,8 @@ class Genome:
 
 
 	# Assumes that there are a nonzero number of input and output nodes
-	#TODO CHECK AND TEST
+	# Adds a node to the genome
+	# TODO CHECK AND TEST
 	def mutate_add_node(self, inno_num):
 
 		# Get a random index in range [0, len(connections))
@@ -62,8 +96,8 @@ class Genome:
 
 		old_connection = self.connections[connection_index]
 		old_connection.enabled = False
-		self.next_node_id += 1
 		new_node = NodeGene(self.next_node_id, NodeGeneTypesEnum.HIDDEN.value) 
+		self.next_node_id += 1
 		old_in_node = old_connection.in_node
 		old_out_node = old_connection.out_node
 		old_weight = old_connection.weight
@@ -76,6 +110,7 @@ class Genome:
 		self.nodes.append(new_node)
 		self.connections.append(new_in_connection)
 		self.connections.append(new_out_connection)
+		self.n_hidden_nodes += 1
 
 
 
@@ -84,196 +119,17 @@ class Genome:
 
 
 	def print_connections(self):
-		for connection in self.connections:
+		print("Printing connections...")
+		for con in self.connections:
 
 			#TODO: make this more than one line
-			print("IN: {:d}, OUT: {:d}, WEIGHT: {:d}".format(connection.in_node.id, connection.out_node.id, connection.weight))
+			print("IN: {:d}, OUT: {:d}, WEIGHT: {:f}, ENABLED: {} INNO_NUM: {:d} ".format(con.in_node.id, con.out_node.id, con.weight, con.enabled, con.inno_num))
 
 
 
 	def print_nodes(self):
+		print("Printing nodes...")
 		for node in self.nodes:
 			print("ID: {:d}, TYPE: {:d}".format(node.id, node.type))
 
 
-
-
-
-
-
-
-
-
-#include <vector>
-#include "ConnectionGene.h"  //This has NodeGene as a dependency.
-#include <cstdlib>
-#include <map>
-
-
-
-
-
-
-# class Genome {
-
-
-# private:
-# 	std::vector<NodeGene> nodes;
-# 	std::vector<ConnectionGene> connections;
-# 	unsigned int* innovation_count_ptr;
-# 	std::map<TYPE, int> type_counts;
-
-
-	
-
-	
-
-# 	/* Takes in two NodeGenes and returns whether a connection exists between them already.
-# 	Might want to rewrite this with an == operator for ConnectionGenes
-# 	*/
-# 	const bool connection_exists(NodeGene first, NodeGene second) const {
-# 		for (unsigned int i=0; i<connections.size(); i++) {
-# 			ConnectionGene c = connections[i];
-# 			if (c.in.id == first.id && c.out.id == second.id)
-# 				return true;
-# 		}
-# 		return false;
-
-# 	}
-
-# 	const bool fully_connected() const{ 
-# 		int n_i = type_counts[INPUT];
-# 		int n_h = type_counts[HIDDEN];
-# 		int n_o = type_counts[OUTPUT];
-
-# 		int max_num_connections = n_i * (n_h + n_o) + n_h * (n_h + n_o);
-# 		return (connections.size() == max_num_connections);
-# 	}
-
-
-
-
-# 	void add_connection() {
-# 		if (this -> fully_connected()) {
-# 			return;
-# 		}		
-
-# 		/* Get two random nodes. I think the default assignment operator should work fine here. 
-# 		I dont want to create a new object. Keep getting two random nodes until one has a higher type
-# 		than the other */
-
-# 		//TODO: WRITE COPY CONSTRUCTOR AND ASSIGNMENT OPERATOR.
-# 		NodeGene first = nodes[rand() % nodes.size()];
-# 		NodeGene second = nodes[rand() % nodes.size()];
-
-# 		bool found_pair = false;
-# 		while (!found_pair) {
-# 			if (first.get_type() == second.get_type() && first.get_type() != HIDDEN) {
-# 				first = nodes[rand() % nodes.size()];
-# 				second = nodes[rand() % nodes.size()];
-# 				continue;
-
-# 			} 
-
-
-# 			//Now lets check if they need to be switched so that first is "in" and second is "out"
-# 			if (first.get_type() > second.get_type()) {
-# 				NodeGene tmp = first;
-# 				first = second;
-# 				second = tmp;
-
-# 			}
-
-# 			/*	At this point, we have two nodes that are correctly spaced 
-# 			(the first and second are either different, or the same but in the hidden layer)
-# 			and first is the "in" node, and the second is the "out" node. Now lets check if such a connection already exists.
-# 			*/
-
-# 			if (connection_exists(first, second)) {
-# 				first = nodes[rand() % nodes.size()];
-# 				second = nodes[rand() % nodes.size()];
-# 				continue;
-# 			}
-
-# 			found_pair = true;
-
-# 		}
-
-# 		//If the above passes, lets add the new connection!
-# 		(*innovation_count_ptr)++;
-# 		ConnectionGene new_connection(first, second, ((float) rand() / (float) RAND_MAX), true, *innovation_count_ptr);
-# 		connections.push_back(new_connection);
-
-
-# 	}
-
-
-# 	//Will the genome be initialized with connections or will connections.size() == 0? 
-# 	//Will have to handle that edge case then.
-# 	void add_node() {
-# 		int rand_index;
-
-# 		bool found_enabled_connection = false;
-# 		while(!found_enabled_connection) {
-# 			rand_index = rand() % connections.size();
-# 			if (connections[rand_index].enabled) {
-# 				found_enabled_connection = true;
-# 			}
-# 		}
-
-
-# 		connections[rand_index].enabled = false;
-
-# 		NodeGene old_in = connections[rand_index].in;
-# 		NodeGene old_out = connections[rand_index].out;
-# 		float old_weight = connections[rand_index].weight;
-
-# 		NodeGene new_node(nodes.size(), HIDDEN);
-# 		nodes.push_back(new_node);
-
-
-# 		(*innovation_count_ptr)++;
-# 		ConnectionGene first_half(old_in, new_node, 1, true, *innovation_count_ptr);
-# 		(*innovation_count_ptr)++;
-# 		ConnectionGene second_half(new_node, old_out, old_weight, true, *innovation_count_ptr);
-
-
-# 		connections.push_back(first_half);
-# 		connections.push_back(second_half);
-
-# 	}
-
-
-# public:
-
-
-# 	//BE SURE TO CHANGE THIS LATER ONCE YOU FIGURE OUT HOW MANY INPUTS AND OUTPUTS ARE NECESSARY
-# 	Genome() {
-# 		type_counts[INPUT] = 0;
-# 		type_counts[HIDDEN] = 0;
-# 		type_counts[OUTPUT] = 0;
-
-# 	}
-
-
-
-
-# 	void print_connections(){
-# 		for (int i=0; i<connections.size(); i++) {
-#     		std::cout << "in: " << connections[i].in.id << " out: " << connections[i].out.id << " "  <<  connections[i].innovation_num << std::endl;
-    
-#     	}
-# 	}
-
-
-# 	void print_nodes(){
-# 		for (int i=0; i<nodes.size(); i++) {
-#     		std::cout << "id: " << nodes[i].id << std::endl;
-    
-#     	}
-# 	}
-
-
-	
-
-# };
