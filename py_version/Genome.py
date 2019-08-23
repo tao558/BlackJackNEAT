@@ -7,9 +7,10 @@ class Genome:
 
 	# nodes is a list of node objects
 	# connections is a list of connections
-	def __init__(self, nodes_t, connections_t):
+	def __init__(self, nodes_t, connections_t, generation_t):
 		self.nodes = nodes_t
 		self.connections = connections_t # This includes active and enactive
+		self.generation = generation_t #reference to gen. this genome is in
 		self.next_node_id = len(self.nodes)
 		
 		# Now count the number of each type of node
@@ -31,14 +32,30 @@ class Genome:
 
 	# Returns true when a connection exists between node1 and node2
 	# false otherwise. Compares ids, not actual references
-	def active_con_exists(self, node1, node2):
-		num_active_cons = [con for con in self.connections if con.in_node == node1 and con.out_node == node2 and con.enabled]
+	def con_exists(self, node1, node2, only_active = False):  
+		num_cons = 0
+		enabled = None
 
-		assert num_active_cons <= 1, ('ERROR: more than one active connection' 
+		for con in self.connections:
+			if con.in_node == node1 and con.out_node == node2:
+
+				if (only_active and con.enabled):
+					enabled = True
+					num_cons += 1
+
+				elif (not only_active):
+					enabled = con.enabled
+					num_cons += 1
+
+
+		# Shouldn't have more than one of the same connection
+		assert num_cons <= 1, ('ERROR: more than one active connection' 
 										'connecting nodes: {} and {}').format(node1.id, node2.id)
+
+		return (num_cons == 1, enabled)
 		
 
-		return num_active_cons == 1
+		
 
 
 	# Returns true if a network is fully connected and false otherwise
@@ -63,30 +80,48 @@ class Genome:
 
 		OUTPUT = NodeGeneTypesEnum.OUTPUT.value
 		INPUT = NodeGeneTypesEnum.INPUT.value
+
 		while (True):
+
 			node1 = self.nodes[np.random.randint(len(self.nodes))]
 			node2 = self.nodes[np.random.randint(len(self.nodes))]
-			con_exists = self.active_con_exists(node1, node2)
-
-			# TODO: Check this/abbreviate it. Added check that makes sure that the connection is enabled
-			if (not con_exists and node1.type <= node2.type and node1.type != OUTPUT and node2.type != INPUT):
+			(con_exists, is_active) = self.con_exists(node1, node2)
+			
+			# TODO: Check this/abbreviate it.
+			# Keep it if its either a new connection or an old, disabled connection
+			# it must also be a valid connection (inputs cant connect to inputs, etc)
+			if ( (not con_exists or not is_active) and node1.type <= node2.type and node1.type != OUTPUT and node2.type != INPUT):
 				break
 		
-		# So now we know which two nodes which are not already connected.
-		# Make the new connection, and take care of the innovation number
-		inno_num += 1
-		new_conn = ConnectionGene(node1, node2, np.random.uniform(), True, inno_num)
-		self.connections.append(new_conn)
-		
+
+		# So now we know which two nodes we are connecting/reconnecting
+		# Make the new connection and figure out if its a new innovation
+		temp_con = ConnectionGene(node1, node2, None, None, None)
+
+		# If there is a matching connection, reenable it
+		if (con_exists):
+			index = self.connections.index(temp_con)
+			self.connections[index].enabled = True
+
+
+		#Otherwise we have a brand new connection!
+		else:
+			inno_num += 1
+			temp_con.inno_num = inno_num
+			temp_con.enabled = True
+			temp_con.weight = np.random.uniform()
+			self.connections.append(temp_con)
+
+
 		return inno_num
 
+		
 
 
-	# Assumes that there are a nonzero number of input and output nodes
+	# Assumes that there are a nonzero number
+	#  of input and output nodes
 	# Adds a node to the genome
-	# TODO CHECK AND TEST
 	def mutate_add_node(self, inno_num):
-
 		# Get a random index in range [0, len(connections))
 		# Loop ensures we get an enabled one
 		while(True):
@@ -94,25 +129,24 @@ class Genome:
 			if (self.connections[connection_index].enabled): 
 				break
 
-		old_connection = self.connections[connection_index]
-		old_connection.enabled = False
-		new_node = NodeGene(self.next_node_id, NodeGeneTypesEnum.HIDDEN.value) 
+		con_to_split = self.connections[connection_index]
+		con_to_split.enabled = False
+		old_in_node = con_to_split.in_node
+		old_out_node = con_to_split.out_node
+		old_weight = con_to_split.weight
+		
+		new_node = NodeGene(self.next_node_id, NodeGeneTypesEnum.HIDDEN.value)
 		self.next_node_id += 1
-		old_in_node = old_connection.in_node
-		old_out_node = old_connection.out_node
-		old_weight = old_connection.weight
-		inno_num += 1
 
-		new_in_connection = ConnectionGene(old_in_node, new_node, 1, True, inno_num)
 		inno_num += 1
-		new_out_connection = ConnectionGene(new_node, old_out_node, old_weight, True, inno_num)
+		new_in_con = ConnectionGene(old_in_node, new_node, 1, True, inno_num)
+		inno_num += 1
+		new_out_con = ConnectionGene(new_node, old_out_node, old_weight, True, inno_num)
 
 		self.nodes.append(new_node)
-		self.connections.append(new_in_connection)
-		self.connections.append(new_out_connection)
+		self.connections.append(new_in_con)
+		self.connections.append(new_out_con)
 		self.n_hidden_nodes += 1
-
-
 
 		return inno_num
 
@@ -121,15 +155,13 @@ class Genome:
 	def print_connections(self):
 		print("Printing connections...")
 		for con in self.connections:
-
-			#TODO: make this more than one line
-			print("IN: {:d}, OUT: {:d}, WEIGHT: {:f}, ENABLED: {} INNO_NUM: {:d} ".format(con.in_node.id, con.out_node.id, con.weight, con.enabled, con.inno_num))
+			print(con)
 
 
 
 	def print_nodes(self):
 		print("Printing nodes...")
 		for node in self.nodes:
-			print("ID: {:d}, TYPE: {:d}".format(node.id, node.type))
+			print(node)
 
 

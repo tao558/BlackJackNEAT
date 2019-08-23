@@ -10,9 +10,7 @@ import sys
 
 
 
-#TODO: .... figure out return statement. Not sure if I want to have each Genome store the generation it is and vice versa or just have Generation store the genomes.
 
-#TODO: list of visible cards?
 #TODO: Make sure consistently using or not using getters and setters 
 
 

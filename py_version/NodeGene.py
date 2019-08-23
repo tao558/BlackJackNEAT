@@ -13,7 +13,8 @@ class NodeGene:
 	def __eq__(self, other):
 		return self.id == other.id
 
-
+	def __str__(self):
+		return "ID: {:d}, TYPE: {:d}".format(self.id, self.type)
 
 
 
