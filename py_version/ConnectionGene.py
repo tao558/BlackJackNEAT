@@ -24,6 +24,7 @@ class ConnectionGene:
 		w = self.weight
 		enabled = self.enabled
 		inno_num = self.inno_num
+		
 		return ('IN: {:d}, OUT: {:d}, WEIGHT: {:f}, ENABLED: {} '
 		'INNO_NUM: {:d}').format(in_id, out_id, w, enabled, inno_num)
 

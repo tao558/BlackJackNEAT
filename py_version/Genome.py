@@ -30,8 +30,6 @@ class Genome:
 
 		self.fitness = 0 # TODO: keep this here, or play some games first?
 
-		
-
 
 	# Returns true when a connection exists between node1 and node2
 	# false otherwise. Compares ids, not actual references
@@ -96,8 +94,6 @@ class Genome:
 		if (self.is_fully_connected()):
 			print("THIS RAN")
 			return inno_num
-
-
 
 		while (True):
 
