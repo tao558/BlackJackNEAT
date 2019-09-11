@@ -117,6 +117,7 @@ class Genome:
 		temp_con = ConnectionGene(node1, node2, None, None, None)
 
 		# If there is a matching connection, reenable it
+		# Note that we don't change inno number
 		if (con_exists):
 			index = self.connections.index(temp_con)
 			self.connections[index].enabled = True
@@ -137,7 +138,7 @@ class Genome:
 
 
 	# Assumes that there are a nonzero number
-	#  of input and output nodes
+	# of input and output nodes
 	# Adds a node to the genome
 	def mutate_add_node(self, inno_num):
 		# Get a random index in range [0, len(connections))
