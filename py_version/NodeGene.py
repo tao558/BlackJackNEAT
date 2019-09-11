@@ -1,13 +1,6 @@
-from enum import Enum
-
-#TODO: inherit three different types from nodegene? Would remove type variable and enum class
 class NodeGene:
-	def __init__(self, id_t, type_t):
+	def __init__(self, id_t):
 		self.id = id_t
-		self.type = type_t
-		self.value = None
-		if self.type == NodeGeneTypesEnum.BIAS.value:
-			self.value = 1 #This will not change
 
 
 	def __hash__(self):
@@ -17,7 +10,41 @@ class NodeGene:
 		return self.id == other.id
 
 	def __str__(self):
-		return "ID: {:d}, TYPE: {:d}".format(self.id, self.type)
+		return "ID: {:d}, TYPE: {}".format(self.id, type(self))
+
+
+class InputNode(NodeGene):
+	def __init__(self, id_t):
+		NodeGene.__init__(self, id_t)
+		self.value = None  #We dont have a value yet!
+		self.order = 1
+
+
+class BiasNode(InputNode):
+	def __init__(self, id_t):
+		InputNode.__init__(self, id_t)
+		self.value = 1  #Update this from the InputNode. This will NEVER change
+
+
+class HiddenNode(NodeGene):
+	def __init__(self, id_t):
+		NodeGene.__init__(self, id_t)
+		self.value = None  
+		self.order = 2
+
+
+class OutputNode(NodeGene):
+	def __init__(self, id_t):
+		NodeGene.__init__(self, id_t)
+		self.value = None 
+		self.order = 3
+
+
+
+
+
+
+
 
 
 

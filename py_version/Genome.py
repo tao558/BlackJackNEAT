@@ -1,4 +1,4 @@
-from NodeGene import NodeGene, NodeGeneTypesEnum
+from NodeGene import *
 import numpy as np
 from ConnectionGene import ConnectionGene
 import copy
@@ -17,9 +17,9 @@ class Genome:
 		# Now count the number of each type of node
 		n_input_nodes = n_hidden_nodes = n_output_nodes = 0
 		for node in self.nodes:
-			if (node.type == NodeGeneTypesEnum.INPUT.value):
+			if isinstance(node, InputNode):
 				n_input_nodes += 1
-			elif (node.type == NodeGeneTypesEnum.HIDDEN.value):
+			elif isinstance(node, HiddenNode):
 				n_hidden_nodes += 1
 			else:
 				n_output_nodes += 1
@@ -73,6 +73,23 @@ class Genome:
 
 
 
+
+	# Checks whether a connection fron n1 to n2 is valid
+	# Based on types (inputs cant be connected to inputs, etc)
+	def is_valid_con(self, n1, n2):
+		n1_is_input = isinstance(n1, InputNode)
+		n2_is_input = isinstance(n2, InputNode)
+		n1_is_output = isinstance(n1, OutputNode)
+		n2_is_output = isinstance(n2, OutputNode)
+		
+		
+		return (n1.order <= n2.order and  
+				not (n1_is_input and n2_is_input) and
+				not (n1_is_output and n2_is_output))
+
+
+
+
 	# Adds a connection to the genome. If already fully connected, does nothing
 	def mutate_add_connection(self, inno_num):
 		# First check if we can even add a connection
@@ -81,8 +98,6 @@ class Genome:
 			return inno_num
 
 
-		OUTPUT = NodeGeneTypesEnum.OUTPUT.value
-		INPUT = NodeGeneTypesEnum.INPUT.value
 
 		while (True):
 
@@ -93,7 +108,7 @@ class Genome:
 			# TODO: Check this/abbreviate it.
 			# Keep it if its either a new connection or an old, disabled connection
 			# it must also be a valid connection (inputs cant connect to inputs, etc)
-			if ( (not con_exists or not is_active) and node1.type <= node2.type and node1.type != OUTPUT and node2.type != INPUT):
+			if ( (not con_exists or not is_active) and self.is_valid_con(node1, node2) ):
 				break
 		
 
@@ -138,7 +153,7 @@ class Genome:
 		old_out_node = con_to_split.out_node
 		old_weight = con_to_split.weight
 		
-		new_node = NodeGene(self.next_node_id, NodeGeneTypesEnum.HIDDEN.value)
+		new_node = HiddenNode(self.next_node_id)
 		self.next_node_id += 1
 
 		inno_num += 1

@@ -1,4 +1,4 @@
-from NodeGene import NodeGene, NodeGeneTypesEnum
+from NodeGene import *
 
 
 # Class representing a directed connection between two NodeGenes
