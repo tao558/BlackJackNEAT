@@ -1,7 +1,7 @@
 import pytest
 from NodeGene import NodeGene, NodeGeneTypesEnum
 from ConnectionGene import ConnectionGene
-from Genome import Genome
+from Genome import *
 from Generation import Generation
 import numpy as np
 
@@ -32,6 +32,26 @@ def supply_generation_one_basic_genome():
     generation.genomes.append(genome)
     return generation
     
+
+
+
+@pytest.fixture
+def supply_generation_two_basic_genomes():
+    generation = Generation([])
+
+    nodes = make_node_list(1, 1, 2)
+    cons1 = [ ConnectionGene(nodes[0], nodes[1], np.random.uniform(), 1, 0),
+              ConnectionGene(nodes[1], nodes[2], np.random.uniform(), 1, 1) ]
+    genome1 = Genome(nodes, cons1, generation)
+
+    cons2 = [ ConnectionGene(nodes[0], nodes[1], np.random.uniform(), 1, 0),
+              ConnectionGene(nodes[2], nodes[3], np.random.uniform(), 1, 2) ]
+    genome2 = Genome(nodes.copy(), cons2, generation)
+    
+    generation.genomes.extend([genome1, genome2])
+    return generation
+    
+
 
 # Should add a node with ID == 2 and 
 # update generation's connections_made with the 2 two connections
@@ -114,3 +134,21 @@ def test_add_connection_fully_connected(supply_generation_one_basic_genome):
     assert len(genome.nodes) == 2
 
 
+# Tests that crossing over works if one of the genomes is empty
+def test_crossover_empty_genome(supply_generation_one_basic_genome):
+    pass
+
+
+
+# Tests that crossing over works in a very basic case: 
+# 1 matching gene, 1 disjoint, and 1 excess
+def test_crossover_basic(supply_generation_two_basic_genomes):
+    generation = supply_generation_two_basic_genomes
+    g1 = generation.genomes[0]
+    g2 = generation.genomes[1]
+
+    inno_num = 2 # This is the highest inno num of any gene in g1 and g2
+    new_generation = Generation([])
+
+    g3 = crossover(g1, g2, new_generation)
+    #TODO: This test works! just write formal assert statements and relocate to different file

@@ -5,6 +5,9 @@ class NodeGene:
 	def __init__(self, id_t, type_t):
 		self.id = id_t
 		self.type = type_t
+		self.value = None
+		if self.type == NodeGeneTypesEnum.BIAS.value:
+			self.value = 1 #This will not change
 
 
 	def __hash__(self):
@@ -20,8 +23,9 @@ class NodeGene:
 
 class NodeGeneTypesEnum(Enum):
 	INPUT = 1
-	HIDDEN = 2
-	OUTPUT = 3
+	BIAS = 2
+	HIDDEN = 3
+	OUTPUT = 4
 
 
 
